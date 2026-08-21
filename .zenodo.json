@@ -1,0 +1,47 @@
+{
+  "title": "Reassessing sex-specific associations of urinary phthalate metabolites with self-reported prevalent stroke: a survey-weighted cross-sectional NHANES 2003–2018 analysis",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Sun, Hao",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    },
+    {
+      "name": "Zhao, Xin",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    },
+    {
+      "name": "Xiao, Xinxing",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    },
+    {
+      "name": "Shang, Xinyuan",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    },
+    {
+      "name": "Li, Chunyu",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    },
+    {
+      "name": "Hao, Fang",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    },
+    {
+      "name": "Guo, Dong",
+      "affiliation": "Department of Neurology, Liaocheng People's Hospital, Liaocheng, Shandong, People's Republic of China"
+    }
+  ],
+  "description": "Reproducibility code and configuration files for a survey-weighted, sex-stratified reassessment of urinary phthalate metabolites and self-reported prevalent stroke in NHANES 2003–2018. Participant-level reconstructed analytic data are not redistributed.",
+  "access_right": "open",
+  "license": "mit",
+  "version": "1.0.0",
+  "language": "eng",
+  "keywords": [
+    "NHANES",
+    "phthalates",
+    "stroke",
+    "complex survey",
+    "reproducibility"
+  ],
+  "notes": "The associated study was supported by the Research and Development Fund Project of the Affiliated Hospital (Teaching Hospital) of Shandong Second Medical University (grant 2023FYM104)."
+}

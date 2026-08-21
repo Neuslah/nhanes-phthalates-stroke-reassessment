@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+title: "Reassessing sex-specific associations of urinary phthalate metabolites with self-reported prevalent stroke: a survey-weighted cross-sectional NHANES 2003–2018 analysis"
+type: software
+abstract: "Reproducibility code and configuration files for a survey-weighted, sex-stratified reassessment of urinary phthalate metabolites and self-reported prevalent stroke in NHANES 2003–2018. Participant-level reconstructed analytic data are not redistributed."
+authors:
+  - family-names: Sun
+    given-names: Hao
+  - family-names: Zhao
+    given-names: Xin
+  - family-names: Xiao
+    given-names: Xinxing
+  - family-names: Shang
+    given-names: Xinyuan
+  - family-names: Li
+    given-names: Chunyu
+  - family-names: Hao
+    given-names: Fang
+  - family-names: Guo
+    given-names: Dong
+version: "1.0.0"
+license: MIT
+keywords:
+  - NHANES
+  - phthalates
+  - stroke
+  - complex survey
+  - reproducibility
