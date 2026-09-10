@@ -1,6 +1,12 @@
 # NHANES urinary phthalates and prevalent stroke: local reproducibility package
 
-Release status: **v1.0.0 RELEASE SOURCE — NOT YET PUBLICLY RELEASED**.
+## Version history
+
+**v1.0.0** — Initial public reproducibility release, published 21 August 2026.
+
+**v1.0.1** — Minimal reproducibility correction: adds a portable aggregate reproduction route for the four corrected Supplementary Table S3 variables and documents their variable-specific non-missing denominators. It does not change the analytic sample, primary models, FDR family, secondary/exploratory model definitions, or primary statistical results.
+
+The dataset pipeline emits `dataset/s3_four_variable_summary.csv` under the user-specified reproduction output directory. It compares the analytic group with the urinary-creatinine-unavailable group for hypertension, diabetes, hyperlipidemia, and ever smoking. `prevalence` is a proportion (0–1); SMD is the absolute binary standardized mean difference using each variable's non-missing denominator. `config/s3-four-variable-reference.csv` supplies the final aggregate validation anchors. This route does **not** claim to reproduce every cell of Supplementary Table S3. No participant-level S3 file is saved or released.
 
 ## Study scope
 

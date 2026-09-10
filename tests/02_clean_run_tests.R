@@ -47,3 +47,40 @@ if (nrow(partition_hashes) != 2L || !all(partition_hashes$object_identity_pass))
   stop("Repeated-holdout partition identity failed")
 }
 cat("CLEAN_RUN_TESTS=PASS\n")
+
+# BEGIN S3 TESTS: append-only; all existing assertions above remain intact.
+s3_script_arg <- grep("^--file=", commandArgs(trailingOnly = FALSE), value = TRUE)
+if (length(s3_script_arg) != 1L) stop("Cannot locate S3 reference relative to test script")
+s3_package_root <- dirname(dirname(normalizePath(
+  sub("^--file=", "", s3_script_arg), winslash = "/", mustWork = TRUE)))
+s3 <- read.csv(file.path(output, "dataset", "s3_four_variable_summary.csv"),
+               check.names = FALSE, stringsAsFactors = FALSE)
+s3_ref <- read.csv(file.path(s3_package_root, "config", "s3-four-variable-reference.csv"),
+                   check.names = FALSE, stringsAsFactors = FALSE)
+s3_schema <- c("variable", "group", "group_n", "positive_n", "nonmissing_n",
+               "missing_n", "prevalence", "SMD")
+s3_vars <- c("hypertension", "diabetes", "hyperlipidemia", "smoking")
+s3_groups <- c("analytic", "excluded_creatinine_unavailable")
+for (z in list(s3, s3_ref)) {
+  if (!identical(names(z), s3_schema) || nrow(z) != 8L ||
+      !setequal(z$variable, s3_vars) || !setequal(z$group, s3_groups) ||
+      anyDuplicated(paste(z$variable, z$group)) || anyNA(z)) {
+    stop("S3 schema, group, variable, or privacy assertion failed")
+  }
+}
+s3_key <- paste(s3_ref$variable, s3_ref$group)
+s3 <- s3[match(s3_key, paste(s3$variable, s3$group)), , drop = FALSE]
+for (nm in c("group_n", "positive_n", "nonmissing_n", "missing_n")) {
+  if (any(s3[[nm]] != s3_ref[[nm]])) stop("S3 count mismatch: ", nm)
+}
+for (nm in c("prevalence", "SMD")) {
+  if (any(!is.finite(s3[[nm]])) || any(abs(s3[[nm]] - s3_ref[[nm]]) > 1e-12)) {
+    stop("S3 full-precision mismatch: ", nm)
+  }
+}
+if (any(s3$group_n != s3$nonmissing_n + s3$missing_n) ||
+    any(abs(s3$prevalence - s3$positive_n / s3$nonmissing_n) > 1e-12)) {
+  stop("S3 denominator assertion failed")
+}
+cat("S3_FOUR_VARIABLE_TESTS=PASS\n")
+# END S3 TESTS

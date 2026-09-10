@@ -18,7 +18,7 @@ authors:
     given-names: Fang
   - family-names: Guo
     given-names: Dong
-version: "1.0.0"
+version: "1.0.1"
 license: MIT
 keywords:
   - NHANES

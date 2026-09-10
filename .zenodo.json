@@ -34,7 +34,7 @@
   "description": "Reproducibility code and configuration files for a survey-weighted, sex-stratified reassessment of urinary phthalate metabolites and self-reported prevalent stroke in NHANES 2003–2018. Participant-level reconstructed analytic data are not redistributed.",
   "access_right": "open",
   "license": "mit",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "language": "eng",
   "keywords": [
     "NHANES",

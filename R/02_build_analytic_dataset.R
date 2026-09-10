@@ -253,6 +253,11 @@ n_stroke_missing_excluded <- n0 - nrow(df)
 cat("3. MCQ160F Yes/No：排除", n0 - nrow(df), "→", nrow(df), "\n")
 
 # Step 4: URXUCR有效
+# BEGIN S3 SNAPSHOT: isolated in-memory branch; never serialized.
+s3_excluded <- df[is.na(df$URXUCR) | df$URXUCR <= 0,
+                  c("SEQN", "BPQ020", "BPQ040A", "DIQ010", "BPQ080", "SMQ020"),
+                  drop = FALSE]
+# END S3 SNAPSHOT
 n0 <- nrow(df)
 df <- df[!is.na(df$URXUCR) & df$URXUCR > 0, ]
 n_creatinine_unavailable_excluded <- n0 - nrow(df)
@@ -545,3 +550,46 @@ cat(sprintf("  协变量不完整/权重无效：%d\n", n_covariates_weights_exc
 cat(sprintf("  最终：%d\n", nrow(analytic_main)))
 
 cat("\n✓ R03 分析数据集构建完成（对齐V4）。\n")
+
+# BEGIN S3 SUMMARY: four corrected variables only; aggregate output only.
+stopifnot(nrow(analytic_main) == 9129L, nrow(s3_excluded) == 23403L,
+          !anyDuplicated(analytic_main$SEQN), !anyDuplicated(s3_excluded$SEQN),
+          length(intersect(analytic_main$SEQN, s3_excluded$SEQN)) == 0L)
+s3_bpq020 <- as.character(s3_excluded$BPQ020)
+s3_bpq040a <- as.character(s3_excluded$BPQ040A)
+# Preserve the existing nested ifelse, including its NA propagation.
+s3_ex <- list(
+  hypertension = ifelse(s3_bpq020 == "Yes", 1L,
+    ifelse(!is.na(s3_bpq040a) & s3_bpq040a == "Yes", 1L,
+    ifelse(s3_bpq020 == "No", 0L, NA_integer_))),
+  diabetes = ifelse(as.character(s3_excluded$DIQ010) == "Yes", 1L,
+    ifelse(as.character(s3_excluded$DIQ010) == "No", 0L, NA_integer_)),
+  hyperlipidemia = ifelse(as.character(s3_excluded$BPQ080) == "Yes", 1L,
+    ifelse(as.character(s3_excluded$BPQ080) == "No", 0L, NA_integer_)),
+  smoking = ifelse(as.character(s3_excluded$SMQ020) == "Yes", 1L,
+    ifelse(as.character(s3_excluded$SMQ020) == "No", 0L, NA_integer_))
+)
+s3_in <- list(
+  hypertension = as.integer(analytic_main$hypertension_f == "Yes"),
+  diabetes = as.integer(analytic_main$diabetes_f == "Yes"),
+  hyperlipidemia = as.integer(analytic_main$hyperlipidemia_f == "Yes"),
+  smoking = as.integer(analytic_main$smoking_f == "Ever")
+)
+s3_rows <- lapply(names(s3_in), function(v) {
+  p1 <- mean(s3_in[[v]], na.rm = TRUE)
+  p2 <- mean(s3_ex[[v]], na.rm = TRUE)
+  smd <- abs(p1 - p2) / sqrt((p1 * (1 - p1) + p2 * (1 - p2)) / 2)
+  do.call(rbind, lapply(c("analytic", "excluded_creatinine_unavailable"), function(g) {
+    x <- if (g == "analytic") s3_in[[v]] else s3_ex[[v]]
+    data.frame(variable = v, group = g, group_n = length(x),
+      positive_n = sum(x == 1L, na.rm = TRUE), nonmissing_n = sum(!is.na(x)),
+      missing_n = sum(is.na(x)), prevalence = mean(x, na.rm = TRUE), SMD = smd,
+      stringsAsFactors = FALSE)
+  }))
+})
+s3_summary <- do.call(rbind, s3_rows)
+stopifnot(nrow(s3_summary) == 8L, all(is.finite(s3_summary$SMD)))
+write.csv(s3_summary, file.path(output_root, "s3_four_variable_summary.csv"),
+          row.names = FALSE, na = "", fileEncoding = "UTF-8")
+cat("S3 aggregate summary written; no participant-level S3 output.\n")
+# END S3 SUMMARY
