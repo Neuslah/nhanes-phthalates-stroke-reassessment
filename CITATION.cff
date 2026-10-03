@@ -1,3 +1,4 @@
+# v1.1.0 local release candidate; not published; no release date/DOI assigned.
 cff-version: 1.2.0
 message: "If you use this software, please cite it using these metadata."
 title: "Reassessing sex-specific associations of urinary phthalate metabolites with self-reported prevalent stroke: a survey-weighted cross-sectional NHANES 2003–2018 analysis"
@@ -18,7 +19,6 @@ authors:
     given-names: Fang
   - family-names: Guo
     given-names: Dong
-version: "1.0.1"
 license: MIT
 keywords:
   - NHANES
@@ -26,3 +26,4 @@ keywords:
   - stroke
   - complex survey
   - reproducibility
+version: 1.1.0

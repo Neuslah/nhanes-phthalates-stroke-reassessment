@@ -1,94 +1,34 @@
-# NHANES urinary phthalates and prevalent stroke: local reproducibility package
+# NHANES Phthalates–Stroke Reassessment — v1.1.0
 
-## Version history
+This is a local release candidate. VERSION = 1.1.0; TAG_DRAFT = v1.1.0.
+PUBLIC_RELEASE_READY = YES; PUBLIC_RELEASE_EXECUTED = NO.
+No official v1.1.0 tag, release date or version DOI has been assigned.
 
-**v1.0.0** — Initial public reproducibility release, published 21 August 2026.
+v1.1.0 supersedes v1.0.0 / v1.0.1 for reproduction of the current manuscript results. Earlier public source files remain byte-identical under `history/public-v1.0.1`; registered execution scripts and the isolated second mixed driver remain under `history`. Historical code and tests are not entrypoints. Do not run them as the current analysis.
 
-**v1.0.1** — Minimal reproducibility correction: adds a portable aggregate reproduction route for the four corrected Supplementary Table S3 variables and documents their variable-specific non-missing denominators. It does not change the analytic sample, primary models, FDR family, secondary/exploratory model definitions, or primary statistical results.
+## Inputs and runtime
 
-The dataset pipeline emits `dataset/s3_four_variable_summary.csv` under the user-specified reproduction output directory. It compares the analytic group with the urinary-creatinine-unavailable group for hypertension, diabetes, hyperlipidemia, and ever smoking. `prevalence` is a proportion (0–1); SMD is the absolute binary standardized mean difference using each variable's non-missing denominator. `config/s3-four-variable-reference.csv` supplies the final aggregate validation anchors. This route does **not** claim to reproduce every cell of Supplementary Table S3. No participant-level S3 file is saved or released.
+Use Python 3.10+ (standard library only), R 4.5.2 and the recorded package versions in `environment/package-versions.csv`. Install/configure these libraries before execution using normal R library configuration, such as R_LIBS_USER. No script installs packages or embeds a user library path.
 
-## Study scope
+The reconstruction requires 66 translated official NHANES components, 16 official phthalate/alcohol XPTs and 24 official codebooks. Exact component URLs and official XPT identities are in `config/nhanes-components.csv`; codebook URLs and hashes are in `config/official-codebook-urls.csv`. `config/source-inputs.csv` records registered input identities. The independently acquired RDS objects matched the registered objects exactly; alternate serialization hashes are recorded separately in `config/validated-acquisition-sha256.csv`. Both serialization identities are verified input routes and do not change values, factor levels or participant membership. All inputs and reconstructed participant-level data remain outside this package.
 
-This package reproduces the analysis of NHANES 2003–2018 data for cross-sectional associations between ten urinary phthalate metabolites and prevalent self-reported stroke among adults aged 20 years or older. It contains code, configuration, aggregate verification anchors, and environment records. It does not contain participant-level data.
+From any working directory, with explicit paths:
 
-## Data source
+```text
+python <package_root>/scripts/acquire_inputs.py --package-root <package_root> --input-root <empty_input_root> --source-cache <official_source_cache> --rscript <Rscript>
+python <package_root>/scripts/run_pipeline.py --package-root <package_root> --input-root <input_root> --work-root <empty_external_workspace> --rscript <Rscript>
+```
 
-All source components are official CDC/NCHS NHANES public-use files. `config/nhanes-components.csv` provides the exact component URLs, cycle-specific cache filenames, and SHA-256 identities used by the reconstruction. `R/01_download_or_import_nhanes.R` downloads a missing source file or verifies an existing cache file before translating it. For isolated environments without online codebook access, a separately held translated official-source cache may be supplied and is verified against `config/translated-cache-manifest.csv`; no translated data are redistributed. The package does not redistribute raw XPT files or any derived analytic RDS.
+An optional `--translated-cache <cache_root>` uses a separately held registered cache whose hashes/dimensions are verified before import. Without it, official XPTs are translated with nhanesA. A source cache may already hold the registered official XPTs; otherwise they are downloaded and verified. The current runner refuses a nonempty analysis workspace and never imports historical models, partial estimates or completed imputations.
 
-## Analysis hierarchy
+## Current execution and expected outputs
 
-- Primary: sex-stratified survey-weighted single-metabolite Models 1–3. The primary multiplicity family is the 20 fully adjusted Model 3 tests (10 metabolites × 2 sexes), controlled using Benjamini–Hochberg FDR.
-- Secondary: sex-interaction tests and the 2005–2018 common-cycle sensitivity analysis.
-- Exploratory: restricted cubic spline analyses and grouped molar-sum analyses. Era-stratified analyses are descriptive/exploratory. Male MCNP/MCOP subgroup global-interaction tests are non-confirmatory robustness analyses outside the primary FDR family.
-- Secondary-exploratory mixture: WQS, qgcomp, and repeated-holdout WQS are unweighted. They do not support complex-survey national inference.
+The runner verifies sources/alcohol coding, reconstructs all component joins, applies the registered cholesterol proxy, closes participant selection, and fits primary Models 1–3. It then runs common-cycle and categorical cycle sensitivities, sex interactions, RCS, grouped molar sums, male subgroup global interactions, era analyses, Table 1, fresh MI FCS and MI Model 3, ordinary WQS and qgcomp. Each step writes explicit external outputs and logs. Expected canonical CSVs under `expected` are comparison references, never computed results.
 
-## Survey design
+Core counts are 10,528/385 stroke events (female 5,222/198; male 5,306/187); common-cycle counts are 9,366/348 (female 4,642/181; male 4,724/167). The first eight metabolites use the 2003–2018 framework; MCNP/MCOP use 2005–2018. The primary Model 3 BH family contains 20 tests with zero q < .05 survivors. Definitions, covariates, survey weights and inference families remain those of the registered corrected analysis.
 
-The deterministic survey analyses use cycle-appropriate phthalate subsample weights: `WTSA2YR` for 2011–2012 and `WTSB2YR` for the other cycles. The eight-cycle weight is the selected two-year subsample weight divided by 8. Survey designs use `SDMVSTRA`, `SDMVPSU`, nesting, and Taylor linearization through the R `survey` package.
+MI uses four separate sex/window frameworks, m = 50, maxit = 20, seed = 20260925, the registered predictor matrices/methods and nnet.maxit = 1000. Each framework restores its recorded initialization RNG state and stops on automatic predictor changes, logged events or convergence failures. Survey MI pooling retains the registered finite complete-data df rule. Ordinary WQS uses seed = 2026, q = 4, validation = 0, b = 1000 and a sequential gWQS plan; qgcomp bootstrap uses seed = 2026, q = 4 and B = 1000. RH-WQS is withdrawn and no active entrypoint executes it.
 
-## Restricted cubic splines
+Comparison policy was fixed before R execution: absolute difference <= 1e-10 + 1e-8 * abs(expected). Integer sample counts/identities and strings are exact; missing values must agree. Failures stop execution; the tolerance is never relaxed. The `config/lod_exact_comparison.csv` input preserves source-audit annotations; the analysis uses official released exposure values without applying a second LOD substitution.
 
-The current RCS implementation uses exactly three explicit knots at the ordinary empirical 10th, 50th, and 90th percentiles (`quantile(..., type = 7)`) within the corresponding sex-specific model-complete sample. It does not use package-default knot selection.
-
-## Execution order
-
-Use R 4.5.2 or a compatible R 4.5.x environment with the package versions recorded under `environment/`. Supply explicit directories; no script depends on a particular drive, username, or working directory.
-
-1. Create empty directories for an official-source cache, a reproduction workspace, and aggregate outputs.
-2. Run the complete deterministic pipeline:
-
-   ```text
-   Rscript --vanilla R/00_run_deterministic_pipeline.R <package_root> <official_source_cache> <translated_cache_or_dash> <workspace_root> <output_root>
-   ```
-
-   This performs official-source identity checks/import, dataset reconstruction, primary models, primary FDR, deterministic secondary/exploratory analyses, the current grouped and RCS routes, and lightweight mixture validation.
-3. Run the package tests:
-
-   ```text
-   Rscript --vanilla tests/run_tests.R <package_root> <workspace_root> <output_root>
-   ```
-
-   When full mixture outputs are available, `tests/03_inherited_mixture_output_tests.R` checks the registered WQS, qgcomp, and repeated-holdout aggregate anchors and schemas. Stage 5-C used this test with the previously verified full-run outputs instead of rerunning the hours-long models.
-
-4. To fit the full mixture models, run scripts 11–13 with their final argument set to `run`, in numerical order. Full WQS must precede repeated-holdout WQS. The fixed settings are embedded and fail-fast; they are not user-selectable scientific options.
-
-Repeated-holdout partition identity is verified from the serialized R object content. Regenerated compressed RDS file bytes may differ because compression metadata are not a scientific partition identifier; the canonical file SHA-256 is retained separately as provenance.
-
-Intermediate translated and analytic RDS files are written only to the user-declared reproduction workspace. Do not place the workspace inside a public repository.
-
-## Reproducibility anchors
-
-The deterministic reconstruction stops if any of these anchors differs:
-
-| Anchor | Expected |
-|---|---:|
-| Final analytic sample | 9,129 |
-| Stroke events | 375 |
-| Female | 4,611 |
-| Male | 4,518 |
-| Common-cycle sample / events | 8,311 / 339 |
-| Mixture Female sample / events | 4,179 / 175 |
-| Mixture Male sample / events | 4,132 / 164 |
-
-The participant-flow anchor file also verifies all preceding selection counts.
-
-## Package contents
-
-- `R/`: portable analysis scripts and one deterministic runner.
-- `config/nhanes-components.csv`: official-source component manifest.
-- `config/translated-cache-manifest.csv`: identity and dimension gate for an optional separately held translated official-source cache.
-- `config/variable-dictionary.csv`: source-to-derived variable dictionary.
-- `environment/`: reproduction-environment records; these describe the successful reproduction environment and are not presented as the unknown historical-original environment.
-- `tests/`: static, anchor, schema, survey-weight, current grouped/RCS, mixture-sample, and repeated-holdout partition checks.
-- `outputs/`: aggregate example/import audit only; runtime outputs belong in the user-declared output directory.
-
-Historical grouped and RCS implementations were superseded during reproducibility QC and are not active execution routes in this package.
-
-## Limitations
-
-This code reproduces the analysis; it does not convert cross-sectional associations into causal evidence. The outcome is self-reported prevalent stroke. The mixture analyses are deliberately unweighted and exploratory and do not support design-based national estimates.
-
-## License
-
-This reproducibility package is released under the MIT License. See `LICENSE`.
+CLEAN_RUN_VALIDATION = PASS. Fresh aggregate outputs are included only following the full validation gate. Participant data, SEQN lists, completed MI/model objects and credentials are not redistributed. MIT license is retained. Publication remains a separately authorized action.

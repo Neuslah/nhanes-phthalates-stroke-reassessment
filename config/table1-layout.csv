@@ -1,0 +1,26 @@
+﻿row_order,characteristic
+0,Characteristic
+1,N
+2,Male (%)
+3,Age (years)
+4,BMI (kg/m²)
+5,Poverty-income ratio
+6,Race/ethnicity
+7,Non-Hispanic White
+8,Non-Hispanic Black
+9,Mexican American
+10,Other Hispanic
+11,Other/Multiracial
+12,Education
+13,Some college or above
+14,High school graduate
+15,Less than high school
+16,Marital status
+17,Married/partnered
+18,Never married
+19,Separated/divorced/widowed
+20,"Ever smoking, %"
+21,"Alcohol use, yes (%)"
+22,"Hypertension, yes (%)"
+23,"Diabetes, yes (%)"
+24,"Hyperlipidemia, yes (%)"

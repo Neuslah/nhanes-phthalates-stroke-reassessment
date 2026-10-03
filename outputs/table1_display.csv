@@ -1,0 +1,25 @@
+"row_order","Characteristic","Stroke","No_stroke","P_value","is_reference"
+1,"N","385","10,143","—",FALSE
+2,"Male (%)","42.7","49.7","0.024",FALSE
+3,"Age (years)","64.7 (12.9)","46.6 (16.5)","<0.001",FALSE
+4,"BMI (kg/m²)","30.0 (6.8)","28.9 (6.8)","0.042",FALSE
+5,"Poverty-income ratio","2.4 (1.5)","3.1 (1.6)","<0.001",FALSE
+6,"Race/ethnicity","","","0.052",FALSE
+7,"Non-Hispanic White","72.2","69.3","—",TRUE
+8,"Non-Hispanic Black","13.2","10.8","—",FALSE
+9,"Mexican American","4.0","7.9","—",FALSE
+10,"Other Hispanic","2.8","5.1","—",FALSE
+11,"Other/Multiracial","7.7","6.9","—",FALSE
+12,"Education","","","<0.001",FALSE
+13,"Some college or above","45.3","61.9","—",TRUE
+14,"High school graduate","29.3","23.5","—",FALSE
+15,"Less than high school","25.4","14.6","—",FALSE
+16,"Marital status","","","<0.001",FALSE
+17,"Married/partnered","56.5","64.2","—",TRUE
+18,"Never married","5.5","18.2","—",FALSE
+19,"Separated/divorced/widowed","37.9","17.6","—",FALSE
+20,"Ever smoking, %","62.6","44.9","<0.001",FALSE
+21,"Alcohol use, yes (%)","50.9","75.9","<0.001",FALSE
+22,"Hypertension, yes (%)","75.4","30.3","<0.001",FALSE
+23,"Diabetes, yes (%)","29.3","8.9","<0.001",FALSE
+24,"Hyperlipidemia, yes (%)","58.1","32.2","<0.001",FALSE

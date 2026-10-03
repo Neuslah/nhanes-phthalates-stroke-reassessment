@@ -1,0 +1,7 @@
+"analysis","sex","exposure","modifier","N","events","DOMAIN_DF","numerator_df","F","P_full"
+"male_subgroup_global","Male","MCNP","Age",4724,167,109,1,0.142491660942646,0.706550421039541
+"male_subgroup_global","Male","MCNP","BMI",4724,167,109,2,0.813612973921669,0.445927157624731
+"male_subgroup_global","Male","MCNP","Race",4724,167,109,3,1.82004289313735,0.147762245480757
+"male_subgroup_global","Male","MCOP","Age",4724,167,109,1,0.0694336571158986,0.792660656273277
+"male_subgroup_global","Male","MCOP","BMI",4724,167,109,2,0.542618523846213,0.582786083690736
+"male_subgroup_global","Male","MCOP","Race",4724,167,109,3,0.923188588816301,0.432226032132153
